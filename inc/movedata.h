@@ -9,6 +9,8 @@
  *
  */
 
+#pragma once
+
 #include <stdexcept>
 #include <array>
 

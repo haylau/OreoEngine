@@ -11,6 +11,11 @@
 
 #include "../inc/board.h"
 
+const std::map<char, int> Board::files = [] {
+    std::map<char, int> files = {{'a', 0}, {'b', 1}, {'c', 2}, {'d', 3}, {'e', 4}, {'f', 5}, {'g', 6}, {'h', 7}};
+    return files;
+}();
+
 Board::Board() {
     this->bb_piece = 0;
     this->bb_color = 0;
@@ -55,5 +60,5 @@ int Board::moveToIndex(std::string move) {
 
 std::string Board::indexToMove(int index) {
     if(index < 0 || index > 64) throw std::out_of_range("Invalid Index");
-    return "" + files.at(index/8) + index % 8 + 1;
+    return "" + files.at(index / 8) + index % 8 + 1;
 }

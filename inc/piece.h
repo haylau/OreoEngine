@@ -9,7 +9,10 @@
  *
  */
 
+#pragma once
+
 #include <cstdint>
+#include <stdexcept>
 typedef uint64_t bitboard; // 64-bit integer to be used as a bitboard
 //   0b0000 .... 0000
 //     ^            ^
@@ -45,4 +48,5 @@ public:
      * @brief Returns the bit at a given index from a bitboard
      */
     static bool at(bitboard bb, int idx);
+    static void set(bitboard& bb, int idx, int value);
 };

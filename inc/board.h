@@ -9,6 +9,8 @@
  *
  */
 
+#pragma once
+
 #include "../inc/movedata.h"
 #include "../inc/piece.h"
 #include <cstdint>
@@ -22,7 +24,7 @@ typedef uint64_t bitboard; // 64-bit integer to be used as a bitboard
 class Board {
 
 private:
-    const std::map<char, int> files = {{'a', 0}, {'b', 1}, {'c', 2}, {'d', 3}, {'e', 4}, {'f', 5}, {'g', 6}, {'h', 7}};
+    static const std::map<char, int> files;
 
     bitboard bb_piece;
     bitboard bb_color;
@@ -38,6 +40,8 @@ private:
     void initBoard(std::vector<int> pieces);
 
 public:
+    static const int boardSize = 64;
+
     /**
      * @brief Construct a new Board object
      */
@@ -49,6 +53,6 @@ public:
      */
     Board(std::vector<int> pieces);
 
-    int moveToIndex(std::string move);
-    std::string indexToMove(int index);
+    static int moveToIndex(std::string move);
+    static std::string indexToMove(int index);
 };
