@@ -15,15 +15,18 @@ class Piece {
 private:
 
     // 1 = tile has piece / 0 = tile does not have piece
-    static const char pieceMask = 0b00000001; 
+    static const char pieceMask = 0b01; 
     // 1 = white / 0 = black
-    static const char colorMask = 0b00000010; 
+    static const char colorMask = 0b10; 
 
 public:
     static const int isEmpty = 0; 
     static const int isPiece = 1;
     static const int black = 0;
     static const int white = 1;
+
+    static const int blackPiece = 0b01;
+    static const int whitePiece = 0b11;
 
     static int color(int piece);
     static bool piece(int piece);
