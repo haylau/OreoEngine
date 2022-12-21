@@ -9,12 +9,13 @@
  *
  */
 
+#include "../inc/movedata.h"
 #include "../inc/piece.h"
 #include <cstdint>
 #include <map>
+#include <regex>
 #include <stdexcept>
 #include <vector>
-#include <regex>
 
 typedef uint64_t bitboard; // 64-bit integer to be used as a bitboard
 

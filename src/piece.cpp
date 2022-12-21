@@ -18,3 +18,7 @@ int Piece::color(int piece) {
 bool Piece::piece(int piece) {
     return piece & Piece::pieceMask;
 }
+
+bool Piece::at(bitboard bb, int idx) {
+    return (bb >> (bitboardSize - idx)) & 1;
+}
