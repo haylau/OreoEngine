@@ -9,8 +9,15 @@
  * 
  */
 
+
 #include <iostream>
+#include "../inc/board.h"
+#include "../inc/movegen.h"
+
 
 int main () {
-    
+    Board b;
+    MoveGen mg(b.getPieceBoard(), b.getColorBoard(), Piece::white);
+    std::cout << mg << std::endl;
+    return 0;
 }
