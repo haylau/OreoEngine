@@ -24,7 +24,12 @@ typedef uint64_t bitboard; // 64-bit integer to be used as a bitboard
 class Board {
 
 private:
-    static const std::map<char, int> files;
+    // linker got angry
+    const int blackPiece = 0b01;
+    const int whitePiece = 0b11;
+
+    static const std::map<char, int> fileToInt;
+    static const std::map<int, char> intToFile;
 
     bitboard bb_piece;
     bitboard bb_color;
@@ -52,6 +57,9 @@ public:
      * @pre 'pieces' Must contain 64 pieces to initalize
      */
     Board(std::vector<int> pieces);
+
+    bitboard getPieceBoard() const;
+    bitboard getColorBoard() const;
 
     static int moveToIndex(std::string move);
     static std::string indexToMove(int index);

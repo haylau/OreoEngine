@@ -47,6 +47,6 @@ public:
     /**
      * @brief Returns the bit at a given index from a bitboard
      */
-    static bool at(bitboard bb, int idx);
+    static bool at(bitboard bb, int idx, int value);
     static void set(bitboard& bb, int idx, int value);
 };
