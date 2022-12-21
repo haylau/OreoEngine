@@ -1,6 +1,6 @@
 /**
  * @file board.cpp
- * @author your name (you@domain.com)
+ * @author Hayden Lauritzen (haydenlauritzen@gmail.com)
  * @brief
  * @version 0.1
  * @date 2022-12-20
@@ -9,11 +9,21 @@
  *
  */
 
-class Board {
+#include "../inc/board.h"
 
-private:
-    char board[]; // 
+Board::Board() {
+    this->bb_piece = 0;
+    this->bb_color = 0;
+}
 
-public:
+Board::Board(std::vector<int> pieces) {
+    if(pieces.size() > 64) throw std::invalid_argument("pieces has more than 64 pieces.");
+    for(const auto& piece : pieces) {
+        bb_piece |= Piece::piece(piece);
+        bb_piece <<= 1;
+        
+        bb_color |= Piece::color(piece);
+        bb_color <<= 1;
 
-};
+    }
+}
