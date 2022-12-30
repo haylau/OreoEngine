@@ -16,8 +16,10 @@
 int main() {
 
     std::vector<int> debug;
-    debug.insert(debug.end(), 1, Piece::whitePiece);
-    debug.insert(debug.end(), 63, Piece::empty);
+    debug.insert(debug.end(), 1, 3);
+    debug.insert(debug.end(), 8, 0);
+    debug.insert(debug.end(), 1, 1);
+    debug.insert(debug.end(), 54, 0);
 
     Board debugBoard(debug);
     std::cout << debugBoard << std::endl;

@@ -21,7 +21,7 @@
 typedef uint64_t bitboard; // 64-bit integer to be used as a bitboard
 //   0b0000 .... 0000
 //     ^            ^
-// idx 0        idx 63
+// idx 63       idx 0
 
 class Piece {
 

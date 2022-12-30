@@ -38,23 +38,23 @@ bool Piece::piece(int piece) {
 }
 
 bool Piece::at(bitboard bb, int idx, int value) {
-    return ((bb >> (bitboardSize - idx - 1)) & 1) == (bitboard)value;
+    return ((bb >> idx) & 1) == (bitboard)value;
 }
 
 void Piece::set(bitboard& bb, int idx, int value) {
     if(value != 0 && value != 1) throw std::invalid_argument("Value must be 0 or 1");
     if(idx < 0 || idx > 64) throw std::invalid_argument("Index must be between [0, 63]");
     switch(value) {
-        // A = bb                                          --> current board
-        // B = ((bitboard)0b1 << (bitboardSize - idx - 1)) --> represents board of bits to flip
+        // A = bb       --> current board
+        // B = 1 << idx --> represents board of bits to flip
     case 0: {
         // A¬B
-        bb &= ~((bitboard)0b1 << (bitboardSize - idx - 1));
+        bb &= ~((bitboard)0b1 << idx);
         break;
     }
     case 1: {
         // A+B
-        bb |= ((bitboard)0b1 << (bitboardSize - idx - 1));
+        bb |= ((bitboard)0b1 << idx);
         break;
     }
     }

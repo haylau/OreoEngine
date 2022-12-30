@@ -39,9 +39,10 @@ void Board::initBoard() {
     startPieces.insert(startPieces.end(), 27, 0);
     initBoard(startPieces);
 }
-
+;
 void Board::initBoard(std::vector<int> pieces) {
     if(pieces.size() != 64) throw std::invalid_argument("Pieces must have 64 elements");
+    std::reverse(pieces.begin(), pieces.end());
     for(const auto& piece : pieces) {
         this->bb_white <<= 1;
         this->bb_black <<= 1;
@@ -98,6 +99,8 @@ int Board::makeMove(int index) {
     }
     this->bb_white ^= bb_flip;
     this->bb_black ^= bb_flip;
+    this->colorToMove = this->colorToMove == Piece::white ? Piece::black : Piece::white;
+    this->mg = MoveGen(this->bb_white, this->bb_black, this->colorToMove);
     return index;
 }
 

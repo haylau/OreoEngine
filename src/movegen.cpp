@@ -64,7 +64,7 @@ void MoveGen::genMoves() {
             // check if idx already has move set
             if(at(bb_moves, idx, 1)) break;
             bool foundOpponent = false;
-            for(int dist = 1; dist < MoveData::distToEdge[idx][dir]; ++dist) {
+            for(int dist = 1; dist <= MoveData::distToEdge[idx][dir]; ++dist) {
                 int target = idx + (dist * offset);
                 // no piece in this direction
                 if(at(bb_piece, target, Piece::empty)) break;
