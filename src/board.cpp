@@ -11,26 +11,19 @@
 
 #include "../inc/board.h"
 
-const std::map<char, int> Board::fileToInt = [] {
-    std::map<char, int> files = {{'a', 0}, {'b', 1}, {'c', 2}, {'d', 3}, {'e', 4}, {'f', 5}, {'g', 6}, {'h', 7}};
-    return files;
-}();
-const std::map<int, char> Board::intToFile = [] {
-    std::map<int, char> files = {{0, 'a'}, {1, 'b'}, {2, 'c'}, {3, 'd'}, {4, 'e'}, {5, 'f'}, {6, 'g'}, {7, 'h'}};
-    return files;
-}();
-
+// Board Implementation
 Board::Board() {
-    this->bb_piece = 0;
-    this->bb_color = 0;
-
+    this->bb_white = 0b0;
+    this->bb_black = 0b0;
+    this->colorToMove = Piece::white;
     initBoard();
 }
 
 Board::Board(std::vector<int> pieces) {
-    this->bb_piece = 0;
-    this->bb_color = 0;
-
+    this->bb_white = 0b0;
+    this->bb_black = 0b0;
+    // #TODO determine turn based on num of pieces
+    this->colorToMove = Piece::white;
     if(pieces.size() != 64) throw std::invalid_argument("Invalid Size");
     initBoard(pieces);
 }
@@ -50,29 +43,92 @@ void Board::initBoard() {
 void Board::initBoard(std::vector<int> pieces) {
     if(pieces.size() != 64) throw std::invalid_argument("Pieces must have 64 elements");
     for(const auto& piece : pieces) {
-        bb_piece <<= 1;
-        bb_piece |= Piece::piece(piece);
-        bb_color <<= 1;
-        bb_color |= Piece::color(piece);
+        this->bb_white <<= 1;
+        this->bb_black <<= 1;
+        if(piece == Piece::whitePiece) bb_white |= 1;
+        if(piece == Piece::blackPiece) bb_black |= 1;
     }
+    this->mg = MoveGen(this->bb_white, this->bb_black, this->colorToMove);
 }
 
-bitboard Board::getPieceBoard() const {
-    return this->bb_piece;
+bitboard Board::getWhiteBoard() const {
+    return this->bb_white;
 }
 
-bitboard Board::getColorBoard() const {
-    return this->bb_color;
+bitboard Board::getBlackBoard() const {
+    return this->bb_black;
 }
 
-int Board::moveToIndex(std::string move) {
-    if(move.size() != 2) throw std::invalid_argument("Invalid Size");
-    std::regex pattern("[a-h][1-8]");
-    if(!std::regex_search(move, pattern)) throw std::invalid_argument("Invalid Move");
-    return (fileToInt.at(move.at(0)) - 1) + (8 * (std::stoi(std::string(1, move.at(1))) - 1));
+int Board::getColorToMove() const {
+    return this->colorToMove;
 }
 
-std::string Board::indexToMove(int index) {
-    if(index < 0 || index > 64) throw std::out_of_range("Invalid Index");
-    return std::string(1, intToFile.at(index / 8)) + std::to_string(index % 8 + 1);
+int Board::makeMove(std::string move) {
+    return makeMove(Piece::moveToIndex(move));
+}
+
+int Board::makeMove(int index) {
+    if(Piece::at(this->mg.getMoves(), index, Piece::empty)) return -1; // illegal move
+    bitboard bb_piece = this->bb_white | this->bb_black;
+    bitboard* playerBoard = Piece::white == this->colorToMove ? &this->bb_white : &this->bb_black;
+    bitboard* opponentBoard = Piece::white == this->colorToMove ? &this->bb_black : &this->bb_white;
+    // add piece
+    Piece::set(*playerBoard, index, Piece::occupied);
+    // flip pieces
+    bitboard bb_flip = 0;
+    for(int direction = 0; direction < (int)MoveData::moveOffsets.size(); ++direction) {
+        bitboard bb_direction = 0;
+        int offset = MoveData::moveOffsets[direction];
+        for(int distance = offset; MoveData::distToEdge[direction][index]; distance += offset) {
+            int target = index + distance;
+            // empty tile, break
+            if(Piece::at(bb_piece, target, Piece::empty)) break;
+            // opponent piece, add to flip list
+            else if(Piece::at(*opponentBoard, target, Piece::occupied)) {
+                Piece::set(bb_direction, target, Piece::occupied);
+                continue;
+            }
+            // player piece, break and flip this direction
+            else if(Piece::at(*playerBoard, target, Piece::occupied)) {
+                bb_flip |= bb_direction;
+                break;
+            }
+            // loop exists on wall
+        }
+    }
+    this->bb_white ^= bb_flip;
+    this->bb_black ^= bb_flip;
+    return index;
+}
+
+std::ostream& operator<<(std::ostream& os, const Board& b) {
+
+    auto whitePieces = Piece::toVector(b.getWhiteBoard());
+    auto blackPieces = Piece::toVector(b.getBlackBoard());
+    auto moves = Piece::toVector(b.mg.getMoves());
+
+    auto getPiece = [&](int index) -> std::string {
+        if(whitePieces[index] == 1) return "w";
+        if(blackPieces[index] == 1) return "b";
+        if(moves[index] == 1) return "x";
+        return " ";
+    };
+
+    for(int i = 8; i >= 1; --i) {
+        std::string a = getPiece(i * 8 - 1);
+        std::string b = getPiece(i * 8 - 2);
+        std::string c = getPiece(i * 8 - 3);
+        std::string d = getPiece(i * 8 - 4);
+        std::string e = getPiece(i * 8 - 5);
+        std::string f = getPiece(i * 8 - 6);
+        std::string g = getPiece(i * 8 - 7);
+        std::string h = getPiece(i * 8 - 8);
+
+        os << "+---+---+---+---+---+---+---+---+\n";
+        os << "| " << a << " | " << b << " | " << c << " | " << d << " | " << e << " | " << f << " | " << g << " | "
+           << h << " | " << i << " \n";
+    }
+    os << "+---+---+---+---+---+---+---+---+\n";
+    os << "  a   b   c   d   e   f   g   h\n";
+    return os;
 }

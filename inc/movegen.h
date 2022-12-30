@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include "../inc/board.h"
 #include "../inc/movedata.h"
 #include "../inc/piece.h"
+
 #include <cstdint>
 #include <iostream>
 
@@ -23,16 +23,18 @@ class MoveGen {
 
 private:
     bitboard bb_piece;
-    bitboard bb_color;
+    bitboard bb_white;
+    bitboard bb_black;
     bitboard bb_moves;
 
     int colorToMove;
     int opponentColor;
-    bool isAdjacent(int idx, int color);
+    // bool isAdjacent(int idx, int color);
     void genMoves();
 
 public:
-    MoveGen(bitboard bb_piece, bitboard bb_color, int colorToMove);
+    MoveGen();
+    MoveGen(bitboard bb_white, bitboard bb_black, int colorToMove);
     bitboard getMoves() const;
     friend std::ostream& operator<<(std::ostream& os, const MoveGen& mg);
 };

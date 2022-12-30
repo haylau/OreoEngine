@@ -12,10 +12,11 @@
 #pragma once
 
 #include "../inc/movedata.h"
+#include "../inc/movegen.h"
 #include "../inc/piece.h"
+
 #include <cstdint>
 #include <map>
-#include <regex>
 #include <stdexcept>
 #include <vector>
 
@@ -28,11 +29,12 @@ private:
     const int blackPiece = 0b01;
     const int whitePiece = 0b11;
 
-    static const std::map<char, int> fileToInt;
-    static const std::map<int, char> intToFile;
+    bitboard bb_white;
+    bitboard bb_black;
 
-    bitboard bb_piece;
-    bitboard bb_color;
+    int colorToMove;
+
+    MoveGen mg;
 
     /**
      * @brief Initalizes a Board object with the starting position
@@ -58,9 +60,19 @@ public:
      */
     Board(std::vector<int> pieces);
 
-    bitboard getPieceBoard() const;
-    bitboard getColorBoard() const;
+    bitboard getWhiteBoard() const;
+    bitboard getBlackBoard() const;
+    int getColorToMove() const;
 
-    static int moveToIndex(std::string move);
-    static std::string indexToMove(int index);
+    /**
+     * @brief Makes a move on the board
+     * This will modify bitboards
+     * @pre Move must legal
+     * @throw std::runtime_error if Move was illegal
+     * @param index Move to make
+     */
+    int makeMove(int index);
+    int makeMove(std::string move);
+
+    friend std::ostream& operator<<(std::ostream& os, const Board& b);
 };

@@ -20,7 +20,7 @@ static int inline dist(int from, int to) {
 static bool inline at(bitboard bb, int idx, int value) {
     return Piece::at(bb, idx, value);
 }
-static void inline addMove(bitboard& bb, int idx, int value) {
+static void inline add(bitboard& bb, int idx, int value) {
     return Piece::set(bb, idx, value);
 }
 
@@ -28,33 +28,38 @@ static void inline addMove(bitboard& bb, int idx, int value) {
  * Class functionality
  */
 
-MoveGen::MoveGen(bitboard bb_piece, bitboard bb_color, int colorToMove)
-    : bb_piece(bb_piece), bb_color(bb_color), bb_moves(0), colorToMove(colorToMove) {
+MoveGen::MoveGen(bitboard bb_white, bitboard bb_black, int colorToMove)
+    : bb_white(bb_white), bb_black(bb_black), bb_moves(0), colorToMove(colorToMove) {
     if(colorToMove != 0 && colorToMove != 1) throw std::invalid_argument("Color must be 0 or 1");
+    this->bb_piece = this->bb_white | this->bb_black;
     this->opponentColor = this->colorToMove == Piece::white ? Piece::black : Piece::white;
     genMoves();
 }
+
+MoveGen::MoveGen(){};
 
 bitboard MoveGen::getMoves() const {
     return this->bb_moves;
 }
 
-bool MoveGen::isAdjacent(int idx, int color) {
-    for(int dir : MoveData::moveOffsets) {
-        int target = idx + dir;
-        if(target < 0 || target > 64) continue;
-        // if a piece of 'color' is adjacent to idx
-        if(at(bb_piece, target, 1) && at(bb_color, target, color)) return true;
-    }
-    return false;
-}
+// bool MoveGen::isAdjacent(int idx, int color) {
+//     for(int dir : MoveData::moveOffsets) {
+//         int target = idx + dir;
+//         if(target < 0 || target > 64) continue;
+//         // if a piece of 'color' is adjacent to idx
+//         if(at(bb_piece, target, 1) && at(bb_color, target, color)) return true;
+//     }
+//     return false;
+// }
 
 void MoveGen::genMoves() {
+    bitboard* playerBoard = Piece::white == this->colorToMove ? &this->bb_white : &this->bb_black;
+    bitboard* opponentBoard = Piece::white == this->colorToMove ? &this->bb_black : &this->bb_white;
     // valid move must find opponent then empty space in the same direction
-    for(int idx = 0; idx < Board::boardSize; ++idx) {
+    for(int idx = 0; idx < Piece::bitboardSize; ++idx) {
         // piece here; cant play
-        if(at(bb_piece, idx, 1)) continue;
-        for(int dir = 0; dir < MoveData::moveOffsets.size(); ++dir) {
+        if(at(bb_piece, idx, Piece::occupied)) continue;
+        for(int dir = 0; dir < (int)MoveData::moveOffsets.size(); ++dir) {
             int offset = MoveData::moveOffsets[dir];
             // check if idx already has move set
             if(at(bb_moves, idx, 1)) break;
@@ -62,18 +67,16 @@ void MoveGen::genMoves() {
             for(int dist = 1; dist < MoveData::distToEdge[idx][dir]; ++dist) {
                 int target = idx + (dist * offset);
                 // no piece in this direction
-                if(at(bb_piece, target, 0)) break;
-                // found opponent piece
-                if(!foundOpponent && at(bb_color, target, this->opponentColor)) {
-                    foundOpponent = true;
+                if(at(bb_piece, target, Piece::empty)) break;
+                // found first opponent piece
+                if(!foundOpponent && at(*opponentBoard, target, Piece::occupied)) {
+                    foundOpponent = true; // skip other opponent pieces
                     continue;
                 }
-                // found player piece; cant play in this direction
-                if(at(bb_color, target, this->colorToMove)) {
+                // found player piece
+                if(at(*playerBoard, target, Piece::occupied)) {
                     // if encapsulating opponent, add move
-                    if(foundOpponent) {
-                        addMove(bb_moves, idx, 1);
-                    }
+                    if(foundOpponent) add(bb_moves, idx, Piece::occupied);
                     // otherwise cant play here
                     break;
                 }
@@ -84,9 +87,9 @@ void MoveGen::genMoves() {
 
 std::ostream& operator<<(std::ostream& os, const MoveGen& mg) {
     bitboard moves = mg.getMoves();
-    for(int idx = 0; idx < Board::boardSize; ++idx) {
+    for(int idx = 0; idx < Piece::bitboardSize; ++idx) {
         if(at(moves, idx, 1)) {
-            auto str = Board::indexToMove(idx);
+            auto str = Piece::indexToMove(idx);
             os << str << " ";
         }
     }

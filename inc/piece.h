@@ -11,8 +11,13 @@
 
 #pragma once
 
+#include "../inc/movedata.h"
+
 #include <cstdint>
+#include <regex>
 #include <stdexcept>
+#include <vector>
+
 typedef uint64_t bitboard; // 64-bit integer to be used as a bitboard
 //   0b0000 .... 0000
 //     ^            ^
@@ -27,14 +32,18 @@ private:
     static const char colorMask = 0b10;
 
 public:
-    static const int isEmpty = 0;
-    static const int isPiece = 1;
+    static const int empty = 0;
+    static const int occupied = 1;
     static const int black = 0;
     static const int white = 1;
     static const int bitboardSize = 64;
-
     static const int blackPiece = 0b01;
     static const int whitePiece = 0b11;
+
+    static const std::map<char, int> fileToInt;
+    static const std::map<int, char> intToFile;
+    static const std::map<char, int> rankToInt;
+    static const std::map<int, char> intToRank;
 
     /**
      * @brief Returns the color bit
@@ -48,5 +57,17 @@ public:
      * @brief Returns the bit at a given index from a bitboard
      */
     static bool at(bitboard bb, int idx, int value);
+    /**
+     * @brief Modifies the bitboard
+     * @param bb
+     * @param idx
+     * @param value
+     */
     static void set(bitboard& bb, int idx, int value);
+    static std::vector<int> toVector(bitboard bb);
+    //    [0] .... [0] 
+    //     ^       ^
+    // idx 0       idx 63
+    static int moveToIndex(std::string move);
+    static std::string indexToMove(int index);
 };
