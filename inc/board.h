@@ -49,6 +49,9 @@ private:
 public:
     static const int boardSize = 64;
 
+    static const int gameOver = 100;
+    static const int skipTurn = 101;
+
     /**
      * @brief Construct a new Board object
      */
@@ -59,9 +62,29 @@ public:
      * @pre 'pieces' Must contain 64 pieces to initalize
      */
     Board(std::vector<int> pieces);
+    /**
+     * @brief Construct a new Board object and calculate moves
+     * 
+     * @param bb_white 
+     * @param bb_black 
+     * @param colorToMove 
+     */
+    Board(bitboard bb_white, bitboard bb_black, int colorToMove);
+    /**
+     * @brief Construct a new Board object without calculating moves
+     * 
+     * @param bb_white 
+     * @param bb_black 
+     * @param bb_moves 
+     * @param colorToMove 
+     */
+    Board(bitboard bb_white, bitboard bb_black, bitboard bb_moves, int colorToMove);
+    Board(const Board& b);
+    Board(const Board& b, int moveIdx);
 
     bitboard getWhiteBoard() const;
     bitboard getBlackBoard() const;
+    bitboard getMoves() const;
     int getColorToMove() const;
 
     /**

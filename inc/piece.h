@@ -14,6 +14,7 @@
 #include "../inc/movedata.h"
 
 #include <cstdint>
+#include <map>
 #include <regex>
 #include <stdexcept>
 #include <vector>
@@ -64,8 +65,11 @@ public:
      * @param value
      */
     static void set(bitboard& bb, int idx, int value);
+    static int size(bitboard bb);
+    static int makeMove(bitboard& bb_white, bitboard& bb_black, int& colorToMove, int index);
+
     static std::vector<int> toVector(bitboard bb);
-    //    [0] .... [0] 
+    //    [0] .... [0]
     //     ^       ^
     // idx 0       idx 63
     static int moveToIndex(std::string move);

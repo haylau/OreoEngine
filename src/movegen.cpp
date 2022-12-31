@@ -36,6 +36,13 @@ MoveGen::MoveGen(bitboard bb_white, bitboard bb_black, int colorToMove)
     genMoves();
 }
 
+MoveGen::MoveGen(bitboard bb_white, bitboard bb_black, bitboard bb_moves, int colorToMove)
+    : bb_white(bb_white), bb_black(bb_black), bb_moves(bb_moves), colorToMove(colorToMove) {
+    if(colorToMove != 0 && colorToMove != 1) throw std::invalid_argument("Color must be 0 or 1");
+    this->bb_piece = this->bb_white | this->bb_black;
+    this->opponentColor = this->colorToMove == Piece::white ? Piece::black : Piece::white;
+}
+
 MoveGen::MoveGen(){};
 
 bitboard MoveGen::getMoves() const {

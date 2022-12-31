@@ -60,6 +60,50 @@ void Piece::set(bitboard& bb, int idx, int value) {
     }
 }
 
+int Piece::size(bitboard bb) {
+    int size = 0;
+    while(bb) {
+        size += (bb & 1);
+        bb >>= 1;
+    }
+    return size;
+}
+
+int Piece::makeMove(bitboard& bb_white, bitboard& bb_black, int& colorToMove, int index) {
+    bitboard bb_piece = bb_white | bb_black;
+    bitboard* playerBoard = Piece::white == colorToMove ? &bb_white : &bb_black;
+    bitboard* opponentBoard = Piece::white == colorToMove ? &bb_black : &bb_white;
+    // add piece
+    Piece::set(*playerBoard, index, Piece::occupied);
+    // flip pieces
+    bitboard bb_flip = 0;
+    for(int direction = 0; direction < (int)MoveData::moveOffsets.size(); ++direction) {
+        bitboard bb_direction = 0;
+        int offset = MoveData::moveOffsets[direction];
+        for(int distance = offset; MoveData::distToEdge[index][direction]; distance += offset) {
+            int target = index + distance;
+            // empty tile, break
+            if(Piece::at(bb_piece, target, Piece::empty)) break;
+            // opponent piece, add to flip list
+            else if(Piece::at(*opponentBoard, target, Piece::occupied)) {
+                Piece::set(bb_direction, target, Piece::occupied);
+                continue;
+            }
+            // player piece, break and flip this direction
+            else if(Piece::at(*playerBoard, target, Piece::occupied)) {
+                bb_flip |= bb_direction;
+                break;
+            }
+            // loop exists on wall
+        }
+    }
+    bb_white ^= bb_flip;
+    bb_black ^= bb_flip;
+    colorToMove = colorToMove == Piece::white ? Piece::black : Piece::white;
+    // mg = MoveGen(this->bb_white, this->bb_black, this->colorToMove);
+    return index;
+}
+
 std::vector<int> Piece::toVector(bitboard bb) {
     std::vector<int> ret;
     for(int idx = 0; idx < bitboardSize; ++idx) {
@@ -70,14 +114,14 @@ std::vector<int> Piece::toVector(bitboard bb) {
 }
 
 int Piece::moveToIndex(std::string move) {
-    if(move.size() != 2) throw std::invalid_argument("Invalid Size");
+    if(move.size() != 2) return -1;
     std::regex pattern("[a-h][1-8]");
-    if(!std::regex_search(move, pattern)) throw std::invalid_argument("Invalid Move");
+    if(!std::regex_search(move, pattern)) return -1;
     // f5 == (5) + (3 * 8)
     return (fileToInt.at(move.at(0))) + (8 * rankToInt.at(move.at(1)));
 }
 
 std::string Piece::indexToMove(int index) {
-    if(index < 0 || index > 64) throw std::out_of_range("Invalid Index");
+    if(index < 0 || index > 64) return nullptr;
     return std::string(1, intToFile.at(index % 8)) + std::to_string(intToRank.at(index / 8));
 }

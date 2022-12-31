@@ -18,7 +18,6 @@ Board::Board() {
     this->colorToMove = Piece::white;
     initBoard();
 }
-
 Board::Board(std::vector<int> pieces) {
     this->bb_white = 0b0;
     this->bb_black = 0b0;
@@ -26,6 +25,27 @@ Board::Board(std::vector<int> pieces) {
     this->colorToMove = Piece::white;
     if(pieces.size() != 64) throw std::invalid_argument("Invalid Size");
     initBoard(pieces);
+}
+Board::Board(bitboard bb_white, bitboard bb_black, int colorToMove)
+    : bb_white(bb_white), bb_black(bb_black), colorToMove(colorToMove) {
+    this->mg = MoveGen(this->bb_white, this->bb_black, this->colorToMove);
+}
+Board::Board(bitboard bb_white, bitboard bb_black, bitboard bb_moves, int colorToMove)
+    : bb_white(bb_white), bb_black(bb_black), colorToMove(colorToMove) {
+    this->mg = MoveGen(this->bb_white, this->bb_black, bb_moves, this->colorToMove);
+}
+Board::Board(const Board& b) {
+    this->bb_white = b.bb_white;
+    this->bb_black = b.bb_black;
+    this->colorToMove = b.colorToMove;
+    this->mg = MoveGen(b.bb_white, b.bb_black, b.getMoves(), b.colorToMove);
+}
+Board::Board(const Board& b, int moveIdx) {
+    this->bb_white = b.bb_white;
+    this->bb_black = b.bb_black;
+    this->colorToMove = b.colorToMove;
+    this->makeMove(moveIdx);
+    this->mg = MoveGen(this->bb_white, this->bb_black, this->colorToMove);
 }
 
 void Board::initBoard() {
@@ -38,10 +58,10 @@ void Board::initBoard() {
     startPieces.push_back(Board::whitePiece);
     startPieces.insert(startPieces.end(), 27, 0);
     initBoard(startPieces);
-}
-;
+};
 void Board::initBoard(std::vector<int> pieces) {
     if(pieces.size() != 64) throw std::invalid_argument("Pieces must have 64 elements");
+    // init white and black boards
     std::reverse(pieces.begin(), pieces.end());
     for(const auto& piece : pieces) {
         this->bb_white <<= 1;
@@ -49,6 +69,7 @@ void Board::initBoard(std::vector<int> pieces) {
         if(piece == Piece::whitePiece) bb_white |= 1;
         if(piece == Piece::blackPiece) bb_black |= 1;
     }
+    // calc legal moves
     this->mg = MoveGen(this->bb_white, this->bb_black, this->colorToMove);
 }
 
@@ -60,6 +81,10 @@ bitboard Board::getBlackBoard() const {
     return this->bb_black;
 }
 
+bitboard Board::getMoves() const {
+    return this->mg.getMoves();
+}
+
 int Board::getColorToMove() const {
     return this->colorToMove;
 }
@@ -69,39 +94,20 @@ int Board::makeMove(std::string move) {
 }
 
 int Board::makeMove(int index) {
-    if(Piece::at(this->mg.getMoves(), index, Piece::empty)) return -1; // illegal move
-    bitboard bb_piece = this->bb_white | this->bb_black;
-    bitboard* playerBoard = Piece::white == this->colorToMove ? &this->bb_white : &this->bb_black;
-    bitboard* opponentBoard = Piece::white == this->colorToMove ? &this->bb_black : &this->bb_white;
-    // add piece
-    Piece::set(*playerBoard, index, Piece::occupied);
-    // flip pieces
-    bitboard bb_flip = 0;
-    for(int direction = 0; direction < (int)MoveData::moveOffsets.size(); ++direction) {
-        bitboard bb_direction = 0;
-        int offset = MoveData::moveOffsets[direction];
-        for(int distance = offset; MoveData::distToEdge[direction][index]; distance += offset) {
-            int target = index + distance;
-            // empty tile, break
-            if(Piece::at(bb_piece, target, Piece::empty)) break;
-            // opponent piece, add to flip list
-            else if(Piece::at(*opponentBoard, target, Piece::occupied)) {
-                Piece::set(bb_direction, target, Piece::occupied);
-                continue;
-            }
-            // player piece, break and flip this direction
-            else if(Piece::at(*playerBoard, target, Piece::occupied)) {
-                bb_flip |= bb_direction;
-                break;
-            }
-            // loop exists on wall
-        }
-    }
-    this->bb_white ^= bb_flip;
-    this->bb_black ^= bb_flip;
-    this->colorToMove = this->colorToMove == Piece::white ? Piece::black : Piece::white;
+    if(Piece::at(this->getMoves(), index, Piece::empty)) return -1; // illegal move
+    int ret = Piece::makeMove(this->bb_white, this->bb_black, this->colorToMove, index);
     this->mg = MoveGen(this->bb_white, this->bb_black, this->colorToMove);
-    return index;
+    if(Piece::size(this->mg.getMoves()) == 0) {
+        // player has no moves, skip turn
+        this->colorToMove = this->colorToMove == Piece::white ? Piece::black : Piece::white;
+        this->mg = MoveGen(this->bb_white, this->bb_black, this->colorToMove);
+        if(Piece::size(this->mg.getMoves()) == 0) {
+            // both players have no moves --> game over!
+            return Board::gameOver;
+        }
+        return Board::skipTurn;
+    }
+    return ret;
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& b) {

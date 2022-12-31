@@ -34,7 +34,23 @@ private:
 
 public:
     MoveGen();
+    /**
+     * @brief Construct a new Move Gen object and calculate moves
+     * 
+     * @param bb_white 
+     * @param bb_black 
+     * @param colorToMove 
+     */
     MoveGen(bitboard bb_white, bitboard bb_black, int colorToMove);
+    /**
+     * @brief Construct a new Move Gen object without calculating moves
+     * 
+     * @param bb_white 
+     * @param bb_black 
+     * @param bb_moves 
+     * @param colorToMove 
+     */
+    MoveGen(bitboard bb_white, bitboard bb_black, bitboard bb_moves, int colorToMove);
     bitboard getMoves() const;
     friend std::ostream& operator<<(std::ostream& os, const MoveGen& mg);
 };
