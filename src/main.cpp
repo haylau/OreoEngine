@@ -9,15 +9,56 @@
  * 
  */
 
-
+#include <chrono>
+#include <thread>
 #include <iostream>
+#include <random>
 #include "../inc/board.h"
+#include "../inc/piece.h"
 #include "../inc/movegen.h"
-
+#include "../inc/engine.h"
 
 int main () {
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 1);
+
+    int color = dis(gen) == 1 ? Piece::white : Piece::black;
+
     Board b;
-    MoveGen mg(b.getPieceBoard(), b.getColorBoard(), Piece::white);
-    std::cout << mg << std::endl;
+    b.setColorToMove(color);
+    Engine e;
+
+    while(!b.isComplete()) {
+        std::cout << b << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::string oppMove = Board::indexToMove(e.getBestMove(7, b));
+        std::cout << "Ill play " << oppMove << std::endl;
+        b.makeMove(oppMove);
+    }
+
+    // std::string input = "";
+    // std::string turn = color == Piece::white ? "White" : "Black";
+    // std::cout << "You are playing as " << turn << std::endl;
+    // bool playerTurn = color == Piece::white ? true : false;
+    // while(input != "exit" || b.isComplete()) {
+    //     while(playerTurn) {
+    //         std::cout << b << std::endl;
+    //         std::cin >> input;
+    //         playerTurn = b.makeMove(input);
+    //     }
+    //     std::cout << b << std::endl;
+    //     std::string oppMove = Board::indexToMove(e.getBestMove(7, b));
+    //     std::cout << "Ill play " << oppMove << std::endl;
+    //     if(!playerTurn) playerTurn = true;
+    //     b.makeMove(oppMove);
+    // }
+
+    // b.makeMove("d6");
+    // b.makeMove("c4");
+    // std::cout << b << std::endl;
+    // std::cout << "best move is: " << Board::indexToMove(e.getBestMove(7, b)) << std::endl;
+
     return 0;
 }

@@ -1,8 +1,6 @@
 /**
  * @file movegen.cpp
  * @author Hayden Lauritzen (haydenlauritzen@gmail.com)
- * @brief
- * @version 0.1
  * @date 2022-12-20
  *
  * @copyright Copyright (c) 2022
@@ -54,7 +52,7 @@ void MoveGen::genMoves() {
     for(int idx = 0; idx < Board::boardSize; ++idx) {
         // piece here; cant play
         if(at(bb_piece, idx, 1)) continue;
-        for(int dir = 0; dir < MoveData::moveOffsets.size(); ++dir) {
+        for(int dir = 0; dir < (int)MoveData::moveOffsets.size(); ++dir) {
             int offset = MoveData::moveOffsets[dir];
             // check if idx already has move set
             if(at(bb_moves, idx, 1)) break;
@@ -85,9 +83,8 @@ void MoveGen::genMoves() {
 std::ostream& operator<<(std::ostream& os, const MoveGen& mg) {
     bitboard moves = mg.getMoves();
     for(int idx = 0; idx < Board::boardSize; ++idx) {
-        if(at(moves, idx, 1)) {
-            auto str = Board::indexToMove(idx);
-            os << str << " ";
+        if((moves & (1ULL << idx)) != 0ULL) {
+            os << Board::indexToMove(idx) << " ";
         }
     }
     return os;

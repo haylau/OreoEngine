@@ -12,6 +12,7 @@
 #pragma once
 
 #include "../inc/movedata.h"
+#include "../inc/movegen.h"
 #include "../inc/piece.h"
 #include <cstdint>
 #include <map>
@@ -34,6 +35,8 @@ private:
     bitboard bb_piece;
     bitboard bb_color;
 
+    int colorToMove;
+
     /**
      * @brief Initalizes a Board object with the starting position
      */
@@ -46,6 +49,7 @@ private:
 
 public:
     static const int boardSize = 64;
+    static const bitboard finishedGame = ~0ULL;
 
     /**
      * @brief Construct a new Board object
@@ -57,10 +61,20 @@ public:
      * @pre 'pieces' Must contain 64 pieces to initalize
      */
     Board(std::vector<int> pieces);
+    Board(const Board& b);
+
+    bool makeMove(std::string);
+    bool makeMove(int);
 
     bitboard getPieceBoard() const;
     bitboard getColorBoard() const;
+    int getColorToMove() const;
+    bool isComplete() const;
+
+    void setColorToMove(int color);
 
     static int moveToIndex(std::string move);
     static std::string indexToMove(int index);
+
+    friend std::ostream& operator<<(std::ostream& os, const Board& b);
 };

@@ -11,6 +11,9 @@
 
 #include "../inc/movedata.h"
 
+const int boardSize = 64;
+const int boardWidth = 8;
+
 const std::array<int, 8> MoveData::moveOffsets = [] {
     /* Clockwise from Up
      *   -9 -8 -7  7 0 1
@@ -21,7 +24,7 @@ const std::array<int, 8> MoveData::moveOffsets = [] {
     return moveOffsets;
 }();
 
-const std::array<std::array<int, 8>, 64> MoveData::distToEdge = [] {
+const std::array<std::array<int, boardWidth>, boardSize> MoveData::distToEdge = [] {
     /*
      * a1 b1 c1 d1 e1 f1 g1 h1 | 00 01 02 03 04 05 06 07
      * a2 b2 c2 d2 e2 f2 g2 h2 | 08 09 10 11 12 13 14 15
@@ -34,16 +37,16 @@ const std::array<std::array<int, 8>, 64> MoveData::distToEdge = [] {
      * a8 b8 c8 d8 e8 f8 g8 h8 | 56 57 58 59 60 61 62 63
      */
 
-    std::array<std::array<int, 8>, 64> dist;
-    for(int file = 0; file < 8; ++file) {
-        for(int rank = 0; rank < 8; ++rank) {
+    std::array<std::array<int, boardWidth>, boardSize> dist;
+    for(int file = 0; file < boardWidth; ++file) {
+        for(int rank = 0; rank < boardWidth; ++rank) {
 
             int up = rank;
-            int right = 7 - file;
-            int down = 7 - rank;
+            int right = (boardWidth - 1) - file;
+            int down = (boardWidth - 1) - rank;
             int left = file;
 
-            int idx = rank * 8 + file;
+            int idx = rank * boardWidth + file;
 
             dist[idx][0] = up;
             dist[idx][1] = std::min(up, right);
@@ -59,6 +62,6 @@ const std::array<std::array<int, 8>, 64> MoveData::distToEdge = [] {
 }();
 
 int MoveData::dist(int from, int to) {
-    if(from < 0 || from > 64 || to < 0 || to > 64) throw std::out_of_range("Invalid Index");
+    if(from < 0 || from > boardSize || to < 0 || to > boardSize) throw std::out_of_range("Invalid Index");
     return distToEdge[from][to];
 }
