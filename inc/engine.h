@@ -12,7 +12,7 @@
 #include "../inc/moveeval.h"
 #include "../inc/board.h"
 
-#include <map>
+#include <unordered_map>
 #include <functional>
 
 class Engine {
