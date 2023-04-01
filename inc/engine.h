@@ -27,7 +27,7 @@ private:
     Board originalBoard;
 
     int NegaMax(const Board& board, int depth, int alpha, int beta);
-    std::size_t zhash(const Board& board, int eval);
+    std::size_t zhash(const Board& board, bitboard moves, int eval);
 
 public:
 

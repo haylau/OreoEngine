@@ -25,17 +25,32 @@ int main () {
     std::uniform_int_distribution<> dis(0, 1);
 
     int color = dis(gen) == 1 ? Piece::white : Piece::black;
+    std::cout << "I am playing as " << (color == Piece::white ? "White" : "Black") << std::endl;
 
     Board b;
-    b.setColorToMove(color);
     Engine e;
 
     while(!b.isComplete()) {
         std::cout << b << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        // std::this_thread::sleep_for(std::chrono::seconds(1));
         std::string oppMove = Board::indexToMove(e.getBestMove(7, b));
         std::cout << "Ill play " << oppMove << std::endl;
-        b.makeMove(oppMove);
+        if(!b.makeMove(oppMove)) {
+            // game is over
+            int winner = b.getWinner();
+            switch(winner) {
+                case Piece::white:
+                    std::cout << "White wins!" << std::endl;
+                    break;
+                case Piece::black:
+                    std::cout << "Black wins!" << std::endl;
+                    break;
+                case Board::draw:
+                    std::cout << "Draw!" << std::endl;
+                    break;
+            }
+            break;
+        }
     }
 
     // std::string input = "";

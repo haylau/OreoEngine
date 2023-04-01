@@ -77,6 +77,27 @@ bool Board::isComplete() const {
     return bb_piece == Board::finishedGame;
 }
 
+int Board::getWinner() const {
+    int whiteCount = 0;
+    int blackCount = 0;
+    bitboard pieceBoard = getPieceBoard();
+    bitboard colorBoard = getColorBoard();
+    while(pieceBoard != 0ULL) {
+        if(pieceBoard & 1ULL) {
+            if(colorBoard & 1ULL) {
+                blackCount++;
+            }
+            else {
+                whiteCount++;
+            }
+        }
+        pieceBoard >>= 1;
+        colorBoard >>= 1;
+    }
+    if(whiteCount == blackCount) return Board::draw;
+    return whiteCount > blackCount ? Piece::white : Piece::black;
+}
+
 int Board::moveToIndex(std::string move) {
     if(move.size() != 2) throw std::invalid_argument("Invalid Size");
     std::regex pattern("[a-h][1-8]");
@@ -104,6 +125,11 @@ bool Board::makeMove(std::string move) {
 bool Board::makeMove(int index) {
     MoveGen mg = MoveGen(getPieceBoard(), getColorBoard(), getColorToMove());
     bitboard moves = mg.getMoves();
+
+    // no legal moves for either player
+    if(moves == 0ULL) {
+        return false;
+    }
 
     if(!(moves & (1ULL << index))) {
         std::cerr << "Invalid Move" << std::endl;
@@ -134,7 +160,13 @@ bool Board::makeMove(int index) {
         }
     }
 
-    this->colorToMove = getColorToMove() == Piece::white ? Piece::black : Piece::white;
+    mg = MoveGen(getPieceBoard(), getColorBoard(), getColorToMove());
+    moves = mg.getMoves();
+
+    // check for skip
+    if(moves != 0ULL) {
+        this->colorToMove = getColorToMove() == Piece::white ? Piece::black : Piece::white;
+    }
     return true;
 }
 

@@ -50,6 +50,7 @@ private:
 public:
     static const int boardSize = 64;
     static const bitboard finishedGame = ~0ULL;
+    static const int draw = 2;
 
     /**
      * @brief Construct a new Board object
@@ -70,6 +71,7 @@ public:
     bitboard getColorBoard() const;
     int getColorToMove() const;
     bool isComplete() const;
+    int getWinner() const;
 
     void setColorToMove(int color);
 
