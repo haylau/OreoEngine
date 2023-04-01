@@ -1,12 +1,12 @@
 /**
  * @file engine.cpp
  * @author Hayden Lauritzen (haydenlauritzen@gmail.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2022-12-20
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 
 #include <chrono>
@@ -18,7 +18,7 @@
 #include "../inc/movegen.h"
 #include "../inc/engine.h"
 
-int main () {
+int main() {
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -30,24 +30,24 @@ int main () {
     Board b;
     Engine e;
 
-    while(!b.isComplete()) {
+    while (!b.isComplete()) {
         std::cout << b << std::endl;
         // std::this_thread::sleep_for(std::chrono::seconds(1));
         std::string oppMove = Board::indexToMove(e.getBestMove(7, b));
         std::cout << "Ill play " << oppMove << std::endl;
-        if(!b.makeMove(oppMove)) {
+        if (!b.makeMove(oppMove)) {
             // game is over
             int winner = b.getWinner();
-            switch(winner) {
-                case Piece::white:
-                    std::cout << "White wins!" << std::endl;
-                    break;
-                case Piece::black:
-                    std::cout << "Black wins!" << std::endl;
-                    break;
-                case Board::draw:
-                    std::cout << "Draw!" << std::endl;
-                    break;
+            switch (winner) {
+            case Piece::white:
+                std::cout << "White wins!" << std::endl;
+                break;
+            case Piece::black:
+                std::cout << "Black wins!" << std::endl;
+                break;
+            case Board::draw:
+                std::cout << "Draw!" << std::endl;
+                break;
             }
             break;
         }

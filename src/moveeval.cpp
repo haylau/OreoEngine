@@ -16,10 +16,10 @@ int MoveEval::getPosVal(const Board& board) {
     bitboard colorBoard = board.getColorBoard();
     int color = board.getColorToMove();
     int val = 0;
-    for(int idx = 0; idx < Board::boardSize; ++idx) {
-        if(pieceBoard & (1ULL << idx)) {
+    for (int idx = 0; idx < Board::boardSize; ++idx) {
+        if (pieceBoard & (1ULL << idx)) {
             bitboard bb_PieceColor = colorBoard & (1ULL << idx);
-            if(bb_PieceColor && color == Piece::white) {
+            if (bb_PieceColor && color == Piece::white) {
                 val += posVal[idx];
             }
             else {
@@ -34,7 +34,7 @@ int MoveEval::getMoveCountVal(const Board& board) {
     int val = 0;
     MoveGen mg(board.getPieceBoard(), board.getColorBoard(), board.getColorToMove());
     bitboard movesBoard = mg.getMoves();
-    while(movesBoard) {
+    while (movesBoard) {
         val += ((movesBoard & 1) * moveCountVal);
         movesBoard >>= 1;
     }

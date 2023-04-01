@@ -20,7 +20,7 @@ const std::array<int, 8> MoveData::moveOffsets = [] {
      *   -1 () +1  6 - 2
      *   +7 +8 +9  5 4 3
      */
-    std::array<int, 8> moveOffsets = {-8, -7, 1, 9, 8, 7, -1, -9};
+    std::array<int, 8> moveOffsets = { -8, -7, 1, 9, 8, 7, -1, -9 };
     return moveOffsets;
 }();
 
@@ -38,8 +38,8 @@ const std::array<std::array<int, boardWidth>, boardSize> MoveData::distToEdge = 
      */
 
     std::array<std::array<int, boardWidth>, boardSize> dist;
-    for(int file = 0; file < boardWidth; ++file) {
-        for(int rank = 0; rank < boardWidth; ++rank) {
+    for (int file = 0; file < boardWidth; ++file) {
+        for (int rank = 0; rank < boardWidth; ++rank) {
 
             int up = rank;
             int right = (boardWidth - 1) - file;
@@ -62,6 +62,6 @@ const std::array<std::array<int, boardWidth>, boardSize> MoveData::distToEdge = 
 }();
 
 int MoveData::dist(int from, int to) {
-    if(from < 0 || from > boardSize || to < 0 || to > boardSize) throw std::out_of_range("Invalid Index");
+    if (from < 0 || from > boardSize || to < 0 || to > boardSize) throw std::out_of_range("Invalid Index");
     return distToEdge[from][to];
 }
