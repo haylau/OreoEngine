@@ -1,5 +1,6 @@
 #include "../inc/moveeval.h"
 
+// clang-format off
 const int MoveEval::posVal[64] = {
      50,-20, 10,  4,  4, 10,-20, 50,
     -20,-50, -5, -2, -2, -5,-50,-20,
@@ -10,6 +11,7 @@ const int MoveEval::posVal[64] = {
     -20,-50, -5, -2, -2, -5,-50,-20,
      50,-20, 10,  2,  2, 10,-20, 50,
 };
+// clang-format on
 
 int MoveEval::getPosVal(const Board& board) {
     bitboard pieceBoard = board.getPieceBoard();
@@ -21,8 +23,7 @@ int MoveEval::getPosVal(const Board& board) {
             bitboard bb_PieceColor = colorBoard & (1ULL << idx);
             if (bb_PieceColor && color == Piece::white) {
                 val += posVal[idx];
-            }
-            else {
+            } else {
                 val -= posVal[idx];
             }
         }
@@ -43,5 +44,4 @@ int MoveEval::getMoveCountVal(const Board& board) {
 
 int MoveEval::getEval(const Board& b) {
     return getPosVal(b) + getMoveCountVal(b);
-    // return getPosVal(b);
 }

@@ -2,16 +2,12 @@
 
 std::size_t Engine::zhash(const Board& board, bitboard moves, int eval) {
     std::hash<std::string> hasher;
-    std::string key = std::to_string(board.getPieceBoard())
-        + std::to_string(board.getColorBoard())
-        + std::to_string(board.getColorToMove())
-        + std::to_string(moves)
-        + std::to_string(eval);
+    std::string key = std::to_string(board.getPieceBoard()) + std::to_string(board.getColorBoard()) +
+                      std::to_string(board.getColorToMove()) + std::to_string(moves) + std::to_string(eval);
     return hasher(key);
 }
 
-Engine::Engine()
-    : numNodes(0), halfMoves(0), bestMove(-1) {}
+Engine::Engine() : numNodes(0), halfMoves(0), bestMove(-1) {}
 
 int Engine::NegaMax(const Board& board, int depth, int alpha, int beta) {
     MoveGen mg(board.getPieceBoard(), board.getColorBoard(), board.getColorToMove());

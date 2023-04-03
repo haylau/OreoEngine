@@ -9,18 +9,12 @@
 
 #include "../inc/movegen.h"
 
- /**
-  *  Inline functions
-  */
-static int inline dist(int from, int to) {
-    return MoveData::dist(from, to);
-}
-static bool inline at(bitboard bb, int idx, int value) {
-    return Piece::at(bb, idx, value);
-}
-static void inline addMove(bitboard& bb, int idx, int value) {
-    return Piece::set(bb, idx, value);
-}
+/**
+ *  Inline functions
+ */
+static int inline dist(int from, int to) { return MoveData::dist(from, to); }
+static bool inline at(bitboard bb, int idx, int value) { return Piece::at(bb, idx, value); }
+static void inline addMove(bitboard& bb, int idx, int value) { return Piece::set(bb, idx, value); }
 
 /**
  * Class functionality
@@ -33,9 +27,7 @@ MoveGen::MoveGen(bitboard bb_piece, bitboard bb_color, int colorToMove)
     genMoves();
 }
 
-bitboard MoveGen::getMoves() const {
-    return this->bb_moves;
-}
+bitboard MoveGen::getMoves() const { return this->bb_moves; }
 
 bool MoveGen::isAdjacent(int idx, int color) {
     for (int dir : MoveData::moveOffsets) {

@@ -20,7 +20,7 @@ const std::array<int, 8> MoveData::moveOffsets = [] {
      *   -1 () +1  6 - 2
      *   +7 +8 +9  5 4 3
      */
-    std::array<int, 8> moveOffsets = { -8, -7, 1, 9, 8, 7, -1, -9 };
+    std::array<int, 8> moveOffsets = {-8, -7, 1, 9, 8, 7, -1, -9};
     return moveOffsets;
 }();
 

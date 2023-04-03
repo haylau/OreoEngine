@@ -9,14 +9,15 @@
  *
  */
 
+#include "../inc/board.h"
+#include "../inc/engine.h"
+#include "../inc/movegen.h"
+#include "../inc/piece.h"
+
 #include <chrono>
-#include <thread>
 #include <iostream>
 #include <random>
-#include "../inc/board.h"
-#include "../inc/piece.h"
-#include "../inc/movegen.h"
-#include "../inc/engine.h"
+#include <thread>
 
 int main() {
 
@@ -52,28 +53,6 @@ int main() {
             break;
         }
     }
-
-    // std::string input = "";
-    // std::string turn = color == Piece::white ? "White" : "Black";
-    // std::cout << "You are playing as " << turn << std::endl;
-    // bool playerTurn = color == Piece::white ? true : false;
-    // while(input != "exit" || b.isComplete()) {
-    //     while(playerTurn) {
-    //         std::cout << b << std::endl;
-    //         std::cin >> input;
-    //         playerTurn = b.makeMove(input);
-    //     }
-    //     std::cout << b << std::endl;
-    //     std::string oppMove = Board::indexToMove(e.getBestMove(7, b));
-    //     std::cout << "Ill play " << oppMove << std::endl;
-    //     if(!playerTurn) playerTurn = true;
-    //     b.makeMove(oppMove);
-    // }
-
-    // b.makeMove("d6");
-    // b.makeMove("c4");
-    // std::cout << b << std::endl;
-    // std::cout << "best move is: " << Board::indexToMove(e.getBestMove(7, b)) << std::endl;
 
     return 0;
 }

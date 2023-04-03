@@ -12,27 +12,22 @@
 #include "../inc/board.h"
 
 const std::map<char, int> Board::fileToInt = [] {
-    std::map<char, int> files = { {'a', 0}, {'b', 1}, {'c', 2}, {'d', 3}, {'e', 4}, {'f', 5}, {'g', 6}, {'h', 7} };
+    std::map<char, int> files = {{'a', 0}, {'b', 1}, {'c', 2}, {'d', 3}, {'e', 4}, {'f', 5}, {'g', 6}, {'h', 7}};
     return files;
 }();
 const std::map<int, char> Board::intToFile = [] {
-    std::map<int, char> files = { {0, 'a'}, {1, 'b'}, {2, 'c'}, {3, 'd'}, {4, 'e'}, {5, 'f'}, {6, 'g'}, {7, 'h'} };
+    std::map<int, char> files = {{0, 'a'}, {1, 'b'}, {2, 'c'}, {3, 'd'}, {4, 'e'}, {5, 'f'}, {6, 'g'}, {7, 'h'}};
     return files;
 }();
 
-Board::Board()
-    : bb_piece(0ULL), bb_color(0ULL), colorToMove(Piece::white) {
-    initBoard();
-}
+Board::Board() : bb_piece(0ULL), bb_color(0ULL), colorToMove(Piece::white) { initBoard(); }
 
-Board::Board(std::vector<int> pieces)
-    : bb_piece(0ULL), bb_color(0ULL), colorToMove(Piece::white) {
+Board::Board(std::vector<int> pieces) : bb_piece(0ULL), bb_color(0ULL), colorToMove(Piece::white) {
     if (pieces.size() != 64) throw std::invalid_argument("Invalid Size");
     initBoard(pieces);
 }
 
-Board::Board(const Board& other)
-    : bb_piece(other.bb_piece), bb_color(other.bb_color), colorToMove(other.colorToMove) {}
+Board::Board(const Board& other) : bb_piece(other.bb_piece), bb_color(other.bb_color), colorToMove(other.colorToMove) {}
 
 void Board::initBoard() {
     std::vector<int> startPieces;
@@ -56,26 +51,18 @@ void Board::initBoard(std::vector<int> pieces) {
     }
 }
 
-bitboard Board::getPieceBoard() const {
-    return this->bb_piece;
-}
+bitboard Board::getPieceBoard() const { return this->bb_piece; }
 
-bitboard Board::getColorBoard() const {
-    return this->bb_color;
-}
+bitboard Board::getColorBoard() const { return this->bb_color; }
 
-int Board::getColorToMove() const {
-    return this->colorToMove;
-}
+int Board::getColorToMove() const { return this->colorToMove; }
 
 void Board::setColorToMove(int color) {
     if (color != Piece::white && color != Piece::black) throw std::invalid_argument("Invalid Color");
     this->colorToMove = color;
 }
 
-bool Board::isComplete() const {
-    return bb_piece == Board::finishedGame;
-}
+bool Board::isComplete() const { return bb_piece == Board::finishedGame; }
 
 int Board::getWinner() const {
     int whiteCount = 0;
@@ -86,8 +73,7 @@ int Board::getWinner() const {
         if (pieceBoard & 1ULL) {
             if (colorBoard & 1ULL) {
                 blackCount++;
-            }
-            else {
+            } else {
                 whiteCount++;
             }
         }
@@ -114,8 +100,7 @@ bool Board::makeMove(std::string move) {
     int index;
     try {
         index = moveToIndex(move);
-    }
-    catch (const std::invalid_argument& e) {
+    } catch (const std::invalid_argument& e) {
         std::cerr << e.what() << std::endl;
         return false;
     }
@@ -146,15 +131,14 @@ bool Board::makeMove(int index) {
         for (int dist = 1; dist < MoveData::distToEdge[index][dir]; ++dist) {
             if (bb_piece & (1ULL << (index + dist * MoveData::moveOffsets[dir]))) {
                 bitboard bb_PieceColor = bb_color & (1ULL << (index + dist * MoveData::moveOffsets[dir]));
-                if ((bb_PieceColor && getColorToMove() == Piece::black) || (!bb_PieceColor && getColorToMove() == Piece::white)) {
+                if ((bb_PieceColor && getColorToMove() == Piece::black) ||
+                    (!bb_PieceColor && getColorToMove() == Piece::white)) {
                     flip |= (1ULL << (index + dist * MoveData::moveOffsets[dir]));
-                }
-                else {
+                } else {
                     bb_color ^= flip;
                     break;
                 }
-            }
-            else {
+            } else {
                 break;
             }
         }
@@ -188,12 +172,10 @@ std::ostream& operator<<(std::ostream& os, const Board& board) {
             if ((pieceBoard & (1ULL << index)) != 0) {
                 if ((colorBoard & (1ULL << index)) != 0) {
                     piece = 'W';
-                }
-                else {
+                } else {
                     piece = 'B';
                 }
-            }
-            else if ((movesBoard & (1ULL << index)) != 0) {
+            } else if ((movesBoard & (1ULL << index)) != 0) {
                 piece = 'o';
             }
             os << " " << piece << " |";
