@@ -1,4 +1,6 @@
-# The game of Othello written in C++! 
+# OreoEngine
+
+The game of Othello written in C++! 
 
 Implemmented Game Logic
 Board/Move Evaluation WIP
