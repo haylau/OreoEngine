@@ -1,5 +1,4 @@
 # OreoEngine
-
 The game of Othello written in C++! 
 
 Implemmented Game Logic
